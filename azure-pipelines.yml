@@ -6,6 +6,17 @@ variables:
   Configuration: 'Debug'
 
 steps:
+- task: SonarSource.sonarqube.15B84CA1-B62F-4A2A-A403-89B77A063157.SonarQubePrepare@4
+  displayName: 'Prepare analysis on SonarQube'
+  inputs:
+    SonarQube: 'SonarCloud'
+    projectKey: CityH
+    projectName: MSbuildTest
+    projectVersion: '$(AssemblyVersion)'
+    extraProperties: |
+     sonar.organization=cosmin-ciuraru36570
+     sonar.branch.name=$(Build.SourceBranchName)
+
 - task: MSBuild@1
   displayName: 'Build dirs.proj'
   inputs:
@@ -22,6 +33,9 @@ steps:
      !**\obj\**
     runInParallel: false
 
+- task: SonarSource.sonarqube.6D01813A-9589-4B15-8491-8164AEB38055.SonarQubeAnalyze@4
+  displayName: 'Run Code Analysis'
+  
 - task: PublishBuildArtifacts@1
   displayName: 'Publish Artifact: Logs'
   inputs:
